@@ -1,8 +1,8 @@
-# Uniswap V2 Subgraph
+# Capital DEX Subgraph
 
-[Uniswap](https://uniswap.org/) is a decentralized protocol for automated token exchange on Ethereum.
+[Capital DEX](https://capitaldex.exchange) is a decentralized legally protected exchange primarily for security tokens.
 
-This subgraph dynamically tracks any pair created by the uniswap factory. It tracks of the current state of Uniswap contracts, and contains derived stats for things like historical data and USD prices.
+This subgraph dynamically tracks any pair created by the Capital DEX factory. It tracks of the current state of Capital DEX contracts, and contains derived stats for things like historical data and USD prices.
 
 - aggregated data across pairs and tokens,
 - data on individual pairs and tokens,
@@ -22,7 +22,7 @@ Below are a few ways to show how to query the uniswap-subgraph for data. The que
 
 #### UniswapFactory
 
-Contains data across all of Uniswap V2. This entity tracks important things like total liquidity (in ETH and USD, see below), all time volume, transaction count, number of pairs and more.
+Contains data across all of Capital DEX. This entity tracks important things like total liquidity (in ETH and USD, see below), all time volume, transaction count, number of pairs and more.
 
 #### Token
 
