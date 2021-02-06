@@ -342,7 +342,7 @@ export function handleBurn(event: Burn): void {
   let burn = BurnEvent.load(burns[burns.length - 1])
 
   let pair = Pair.load(event.address.toHex())
-  let uniswap = Factory.load(FACTORY_ADDRESS)
+  let factory = Factory.load(FACTORY_ADDRESS)
 
   //update token info
   let token0 = Token.load(pair.token0)
@@ -362,14 +362,14 @@ export function handleBurn(event: Burn): void {
     .times(bundle.ethPrice)
 
   // update txn counts
-  uniswap.txCount = uniswap.txCount.plus(ONE_BI)
+  factory.txCount = factory.txCount.plus(ONE_BI)
   pair.txCount = pair.txCount.plus(ONE_BI)
 
   // update global counter and save
   token0.save()
   token1.save()
   pair.save()
-  uniswap.save()
+  factory.save()
 
   // update burn
   // burn.sender = event.params.sender

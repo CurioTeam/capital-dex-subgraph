@@ -5,27 +5,27 @@ import { Pair, Bundle, Token, Factory, CapitalDexDayData, PairDayData, TokenDayD
 import { ONE_BI, ZERO_BD, ZERO_BI, FACTORY_ADDRESS } from './helpers'
 
 export function updateCapitalDexDayData(event: EthereumEvent): CapitalDexDayData {
-  let uniswap = Factory.load(FACTORY_ADDRESS)
+  let factory = Factory.load(FACTORY_ADDRESS)
   let timestamp = event.block.timestamp.toI32()
   let dayID = timestamp / 86400
   let dayStartTimestamp = dayID * 86400
-  let uniswapDayData = CapitalDexDayData.load(dayID.toString())
-  if (uniswapDayData === null) {
-    uniswapDayData = new CapitalDexDayData(dayID.toString())
-    uniswapDayData.date = dayStartTimestamp
-    uniswapDayData.dailyVolumeUSD = ZERO_BD
-    uniswapDayData.dailyVolumeETH = ZERO_BD
-    uniswapDayData.totalVolumeUSD = ZERO_BD
-    uniswapDayData.totalVolumeETH = ZERO_BD
-    uniswapDayData.dailyVolumeUntracked = ZERO_BD
+  let capitalDexDayData = CapitalDexDayData.load(dayID.toString())
+  if (capitalDexDayData === null) {
+    capitalDexDayData = new CapitalDexDayData(dayID.toString())
+    capitalDexDayData.date = dayStartTimestamp
+    capitalDexDayData.dailyVolumeUSD = ZERO_BD
+    capitalDexDayData.dailyVolumeETH = ZERO_BD
+    capitalDexDayData.totalVolumeUSD = ZERO_BD
+    capitalDexDayData.totalVolumeETH = ZERO_BD
+    capitalDexDayData.dailyVolumeUntracked = ZERO_BD
   }
 
-  uniswapDayData.totalLiquidityUSD = uniswap.totalLiquidityUSD
-  uniswapDayData.totalLiquidityETH = uniswap.totalLiquidityETH
-  uniswapDayData.txCount = uniswap.txCount
-  uniswapDayData.save()
+  capitalDexDayData.totalLiquidityUSD = factory.totalLiquidityUSD
+  capitalDexDayData.totalLiquidityETH = factory.totalLiquidityETH
+  capitalDexDayData.txCount = factory.txCount
+  capitalDexDayData.save()
 
-  return uniswapDayData as CapitalDexDayData
+  return capitalDexDayData as CapitalDexDayData
 }
 
 export function updatePairDayData(event: EthereumEvent): PairDayData {
