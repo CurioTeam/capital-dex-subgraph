@@ -13,7 +13,7 @@ dataSources:
       startBlock: 10000834
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/factory.ts
       entities:
@@ -30,7 +30,7 @@ dataSources:
           file: ./abis/ERC20NameBytes.json
       eventHandlers:
         - event: PairCreated(indexed address,indexed address,address,uint256)
-          handler: handleNewPair
+          handler: handleNewUniswapPair
   - kind: ethereum/contract
     name: CapitalDexFactory
     network: mainnet
@@ -40,7 +40,7 @@ dataSources:
       startBlock: 11529924
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/factory.ts
       entities:
@@ -57,7 +57,7 @@ dataSources:
           file: ./abis/ERC20NameBytes.json
       eventHandlers:
         - event: PairCreated(indexed address,indexed address,address,uint256)
-          handler: handleNewPair
+          handler: handleNewCapitalDexPair
 templates:
   - kind: ethereum/contract
     name: Pair
@@ -66,7 +66,7 @@ templates:
       abi: Pair
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/core.ts
       entities:

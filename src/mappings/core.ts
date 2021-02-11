@@ -16,7 +16,6 @@ import { getEthPriceInUSD, findEthPerToken, getTrackedVolumeUSD, getTrackedLiqui
 import {
   convertTokenToDecimal,
   ADDRESS_ZERO,
-  FACTORY_ADDRESS,
   ONE_BI,
   createUser,
   createLiquidityPosition,
@@ -24,18 +23,22 @@ import {
   BI_18,
   createLiquiditySnapshot
 } from './helpers'
+import { dataSource } from '@graphprotocol/graph-ts'
 
 function isCompleteMint(mintId: string): boolean {
   return MintEvent.load(mintId).sender !== null // sufficient checks
 }
 
 export function handleTransfer(event: Transfer): void {
+  let context = dataSource.context()
+  let factoryAddress = context.getString('factoryAddress')
+
   // ignore initial transfers for first adds
   if (event.params.to.toHexString() == ADDRESS_ZERO && event.params.value.equals(BigInt.fromI32(1000))) {
     return
   }
 
-  let factory = Factory.load(FACTORY_ADDRESS)
+  let factory = Factory.load(factoryAddress)
   let transactionHash = event.transaction.hash.toHexString()
 
   // user stats
@@ -211,10 +214,13 @@ export function handleTransfer(event: Transfer): void {
 }
 
 export function handleSync(event: Sync): void {
+  let context = dataSource.context()
+  let factoryAddress = context.getString('factoryAddress')
+
   let pair = Pair.load(event.address.toHex())
   let token0 = Token.load(pair.token0)
   let token1 = Token.load(pair.token1)
-  let factory = Factory.load(FACTORY_ADDRESS)
+  let factory = Factory.load(factoryAddress)
 
   // reset factory liquidity by subtracting onluy tarcked liquidity
   factory.totalLiquidityETH = factory.totalLiquidityETH.minus(pair.trackedReserveETH as BigDecimal)
@@ -238,8 +244,8 @@ export function handleSync(event: Sync): void {
   bundle.ethPrice = getEthPriceInUSD()
   bundle.save()
 
-  token0.derivedETH = findEthPerToken(token0 as Token)
-  token1.derivedETH = findEthPerToken(token1 as Token)
+  token0.derivedETH = findEthPerToken(token0 as Token, factoryAddress)
+  token1.derivedETH = findEthPerToken(token1 as Token, factoryAddress)
   token0.save()
   token1.save()
 
@@ -276,12 +282,15 @@ export function handleSync(event: Sync): void {
 }
 
 export function handleMint(event: Mint): void {
+  let context = dataSource.context()
+  let factoryAddress = context.getString('factoryAddress')
+
   let transaction = Transaction.load(event.transaction.hash.toHexString())
   let mints = transaction.mints
   let mint = MintEvent.load(mints[mints.length - 1])
 
   let pair = Pair.load(event.address.toHex())
-  let factory = Factory.load(FACTORY_ADDRESS)
+  let factory = Factory.load(factoryAddress)
 
   let token0 = Token.load(pair.token0)
   let token1 = Token.load(pair.token1)
@@ -331,6 +340,9 @@ export function handleMint(event: Mint): void {
 }
 
 export function handleBurn(event: Burn): void {
+  let context = dataSource.context()
+  let factoryAddress = context.getString('factoryAddress')
+
   let transaction = Transaction.load(event.transaction.hash.toHexString())
 
   // safety check
@@ -342,7 +354,7 @@ export function handleBurn(event: Burn): void {
   let burn = BurnEvent.load(burns[burns.length - 1])
 
   let pair = Pair.load(event.address.toHex())
-  let factory = Factory.load(FACTORY_ADDRESS)
+  let factory = Factory.load(factoryAddress)
 
   //update token info
   let token0 = Token.load(pair.token0)
@@ -393,6 +405,9 @@ export function handleBurn(event: Burn): void {
 }
 
 export function handleSwap(event: Swap): void {
+  let context = dataSource.context()
+  let factoryAddress = context.getString('factoryAddress')
+
   let pair = Pair.load(event.address.toHexString())
   let token0 = Token.load(pair.token0)
   let token1 = Token.load(pair.token1)
@@ -448,7 +463,7 @@ export function handleSwap(event: Swap): void {
   pair.save()
 
   // update global values, only used tracked amounts for volume
-  let factory = Factory.load(FACTORY_ADDRESS)
+  let factory = Factory.load(factoryAddress)
   factory.totalVolumeUSD = factory.totalVolumeUSD.plus(trackedAmountUSD)
   factory.totalVolumeETH = factory.totalVolumeETH.plus(trackedAmountETH)
   factory.untrackedVolumeUSD = factory.untrackedVolumeUSD.plus(derivedAmountUSD)

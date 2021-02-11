@@ -1,10 +1,11 @@
 /* eslint-disable prefer-const */
-import { log } from '@graphprotocol/graph-ts'
+import { DataSourceContext, log } from '@graphprotocol/graph-ts'
 import { Factory, Pair, Token, Bundle } from '../types/schema'
-import { PairCreated } from '../types/Factory/Factory'
+import { PairCreated } from '../types/templates/Pair/Factory'
 import { Pair as PairTemplate } from '../types/templates'
 import {
-  FACTORY_ADDRESS,
+  UNISWAP_FACTORY_ADDRESS,
+  CAPITAL_DEX_FACTORY_ADDRESS,
   ZERO_BD,
   ZERO_BI,
   fetchTokenSymbol,
@@ -13,11 +14,14 @@ import {
   fetchTokenTotalSupply
 } from './helpers'
 
-export function handleNewPair(event: PairCreated): void {
+export function handleNewPair(event: PairCreated, factoryAddress: string): void {
+  let context = new DataSourceContext()
+  context.setString("factoryAddress", factoryAddress)
+
   // load factory (create if first exchange)
-  let factory = Factory.load(FACTORY_ADDRESS)
+  let factory = Factory.load(factoryAddress)
   if (factory === null) {
-    factory = new Factory(FACTORY_ADDRESS)
+    factory = new Factory(factoryAddress)
     factory.pairCount = 0
     factory.totalVolumeETH = ZERO_BD
     factory.totalLiquidityETH = ZERO_BD
@@ -104,11 +108,19 @@ export function handleNewPair(event: PairCreated): void {
   pair.token1Price = ZERO_BD
 
   // create the tracked contract based on the template
-  PairTemplate.create(event.params.pair)
+  PairTemplate.createWithContext(event.params.pair, context)
 
   // save updated values
   token0.save()
   token1.save()
   pair.save()
   factory.save()
+}
+
+export function handleNewUniswapPair(event: PairCreated): void {
+  handleNewPair(event, UNISWAP_FACTORY_ADDRESS)
+}
+
+export function handleNewCapitalDexPair(event: PairCreated): void {
+  handleNewPair(event, CAPITAL_DEX_FACTORY_ADDRESS)
 }

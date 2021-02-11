@@ -1,7 +1,8 @@
 /* eslint-disable prefer-const */
 import { Pair, Token, Bundle } from '../types/schema'
 import { BigDecimal, Address, BigInt } from '@graphprotocol/graph-ts/index'
-import { ZERO_BD, factoryContract, ADDRESS_ZERO, ONE_BD } from './helpers'
+import { ZERO_BD, ADDRESS_ZERO, ONE_BD } from './helpers'
+import { Factory as FactoryContract } from '../types/templates/Pair/Factory'
 
 const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
 const USDC_WETH_PAIR = '0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc' // created 10008355
@@ -49,6 +50,8 @@ let WHITELIST: string[] = [
   '0x42Bbfc77Ee4Ed0efC608634859a672D0cf49e1b4', // CUR
   '0x330294de10bAd15f373BA7429Ab9685eDe43c13f', // DAI
   '0xd0A1E359811322d97991E03f863a0C30C2cF029C', // WETH
+  '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
+  '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
 ]
 
 // minimum liquidity required to count towards tracked volume for pairs with small # of Lps
@@ -61,12 +64,13 @@ let MINIMUM_LIQUIDITY_THRESHOLD_ETH = BigDecimal.fromString('2')
  * Search through graph to find derived Eth per token.
  * @todo update to be derived ETH (add stablecoin estimates)
  **/
-export function findEthPerToken(token: Token): BigDecimal {
+export function findEthPerToken(token: Token, factoryAddress: string): BigDecimal {
   if (token.id == WETH_ADDRESS) {
     return ONE_BD
   }
   // loop through whitelist and check if paired with any
   for (let i = 0; i < WHITELIST.length; ++i) {
+    let factoryContract = FactoryContract.bind(Address.fromString(factoryAddress))
     let pairAddress = factoryContract.getPair(Address.fromString(token.id), Address.fromString(WHITELIST[i]))
     if (pairAddress.toHexString() != ADDRESS_ZERO) {
       let pair = Pair.load(pairAddress.toHexString())

@@ -1,11 +1,14 @@
 import { PairHourData } from './../types/schema'
 /* eslint-disable prefer-const */
-import { BigInt, BigDecimal, EthereumEvent } from '@graphprotocol/graph-ts'
+import { BigInt, BigDecimal, ethereum, dataSource } from '@graphprotocol/graph-ts'
 import { Pair, Bundle, Token, Factory, CapitalDexDayData, PairDayData, TokenDayData } from '../types/schema'
-import { ONE_BI, ZERO_BD, ZERO_BI, FACTORY_ADDRESS } from './helpers'
+import { ONE_BI, ZERO_BD, ZERO_BI } from './helpers'
 
-export function updateCapitalDexDayData(event: EthereumEvent): CapitalDexDayData {
-  let factory = Factory.load(FACTORY_ADDRESS)
+export function updateCapitalDexDayData(event: ethereum.Event): CapitalDexDayData {
+  let context = dataSource.context()
+  let factoryAddress = context.getString('factoryAddress')
+
+  let factory = Factory.load(factoryAddress)
   let timestamp = event.block.timestamp.toI32()
   let dayID = timestamp / 86400
   let dayStartTimestamp = dayID * 86400
@@ -28,7 +31,7 @@ export function updateCapitalDexDayData(event: EthereumEvent): CapitalDexDayData
   return capitalDexDayData as CapitalDexDayData
 }
 
-export function updatePairDayData(event: EthereumEvent): PairDayData {
+export function updatePairDayData(event: ethereum.Event): PairDayData {
   let timestamp = event.block.timestamp.toI32()
   let dayID = timestamp / 86400
   let dayStartTimestamp = dayID * 86400
@@ -60,7 +63,7 @@ export function updatePairDayData(event: EthereumEvent): PairDayData {
   return pairDayData as PairDayData
 }
 
-export function updatePairHourData(event: EthereumEvent): PairHourData {
+export function updatePairHourData(event: ethereum.Event): PairHourData {
   let timestamp = event.block.timestamp.toI32()
   let hourIndex = timestamp / 3600 // get unique hour within unix history
   let hourStartUnix = hourIndex * 3600 // want the rounded effect
@@ -89,7 +92,7 @@ export function updatePairHourData(event: EthereumEvent): PairHourData {
   return pairHourData as PairHourData
 }
 
-export function updateTokenDayData(token: Token, event: EthereumEvent): TokenDayData {
+export function updateTokenDayData(token: Token, event: ethereum.Event): TokenDayData {
   let bundle = Bundle.load('1')
   let timestamp = event.block.timestamp.toI32()
   let dayID = timestamp / 86400
