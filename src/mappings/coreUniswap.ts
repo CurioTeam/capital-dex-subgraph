@@ -21,7 +21,7 @@ import {
   createLiquidityPosition,
   ZERO_BD,
   BI_18,
-  createLiquiditySnapshot, CAPITAL_DEX_FACTORY_ADDRESS
+  createLiquiditySnapshot, UNISWAP_FACTORY_ADDRESS
 } from './helpers'
 import { dataSource } from '@graphprotocol/graph-ts'
 
@@ -35,7 +35,7 @@ export function handleTransfer(event: Transfer): void {
     return
   }
 
-  let factory = Factory.load(CAPITAL_DEX_FACTORY_ADDRESS)
+  let factory = Factory.load(UNISWAP_FACTORY_ADDRESS)
   let transactionHash = event.transaction.hash.toHexString()
 
   // user stats
@@ -214,7 +214,7 @@ export function handleSync(event: Sync): void {
   let pair = Pair.load(event.address.toHex())
   let token0 = Token.load(pair.token0)
   let token1 = Token.load(pair.token1)
-  let factory = Factory.load(CAPITAL_DEX_FACTORY_ADDRESS)
+  let factory = Factory.load(UNISWAP_FACTORY_ADDRESS)
 
   // reset factory liquidity by subtracting onluy tarcked liquidity
   factory.totalLiquidityETH = factory.totalLiquidityETH.minus(pair.trackedReserveETH as BigDecimal)
@@ -238,8 +238,8 @@ export function handleSync(event: Sync): void {
   bundle.ethPrice = getEthPriceInUSD()
   bundle.save()
 
-  token0.derivedETH = findEthPerToken(token0 as Token, CAPITAL_DEX_FACTORY_ADDRESS)
-  token1.derivedETH = findEthPerToken(token1 as Token, CAPITAL_DEX_FACTORY_ADDRESS)
+  token0.derivedETH = findEthPerToken(token0 as Token, UNISWAP_FACTORY_ADDRESS)
+  token1.derivedETH = findEthPerToken(token1 as Token, UNISWAP_FACTORY_ADDRESS)
   token0.save()
   token1.save()
 
@@ -281,7 +281,7 @@ export function handleMint(event: Mint): void {
   let mint = MintEvent.load(mints[mints.length - 1])
 
   let pair = Pair.load(event.address.toHex())
-  let factory = Factory.load(CAPITAL_DEX_FACTORY_ADDRESS)
+  let factory = Factory.load(UNISWAP_FACTORY_ADDRESS)
 
   let token0 = Token.load(pair.token0)
   let token1 = Token.load(pair.token1)
@@ -342,7 +342,7 @@ export function handleBurn(event: Burn): void {
   let burn = BurnEvent.load(burns[burns.length - 1])
 
   let pair = Pair.load(event.address.toHex())
-  let factory = Factory.load(CAPITAL_DEX_FACTORY_ADDRESS)
+  let factory = Factory.load(UNISWAP_FACTORY_ADDRESS)
 
   //update token info
   let token0 = Token.load(pair.token0)
@@ -448,7 +448,7 @@ export function handleSwap(event: Swap): void {
   pair.save()
 
   // update global values, only used tracked amounts for volume
-  let factory = Factory.load(CAPITAL_DEX_FACTORY_ADDRESS)
+  let factory = Factory.load(UNISWAP_FACTORY_ADDRESS)
   factory.totalVolumeUSD = factory.totalVolumeUSD.plus(trackedAmountUSD)
   factory.totalVolumeETH = factory.totalVolumeETH.plus(trackedAmountETH)
   factory.untrackedVolumeUSD = factory.untrackedVolumeUSD.plus(derivedAmountUSD)
