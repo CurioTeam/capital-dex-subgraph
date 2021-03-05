@@ -294,3 +294,107 @@ type TokenDayData @entity {
   # price stats
   priceUSD: BigDecimal!
 }
+
+type PriceFeed @entity {
+  id: ID!
+  assetPair: String!
+  latestPrice: Price!
+  latestHourlyCandle: HourlyCandle!
+  latestDailyCandle: DailyCandle!
+  latestWeeklyCandle: WeeklyCandle!
+  historicalPrices: [Price!]! @derivedFrom(field: "priceFeed")
+  hourlyCandles: [HourlyCandle!]! @derivedFrom(field: "priceFeed")
+  dailyCandles: [DailyCandle!]! @derivedFrom(field: "priceFeed")
+  weeklyCandles: [WeeklyCandle!]! @derivedFrom(field: "priceFeed")
+}
+
+type Price @entity {
+  id: ID!
+  blockNumber: BigInt!
+  blockHash: String!
+  transactionHash: String!
+  priceFeed: PriceFeed!
+  assetPair: String!
+  price: BigInt!
+  timestamp: BigInt!
+  priceDeviation: BigDecimal
+  priceDeviationAbsolute: BigDecimal
+  previousPrice: Price
+  timeSincePreviousPrice: BigInt
+}
+
+type AggregateState @entity {
+  id: ID!
+  latestHourlyAggregate: HourlyAggregate!
+  latestDailyAggregate: DailyAggregate!
+  latestWeeklyAggregate: WeeklyAggregate!
+}
+
+type HourlyAggregate @entity {
+  id: ID!
+  openTimestamp: BigInt!
+  closeTimestamp: BigInt!
+  candles: [HourlyCandle!]!
+}
+
+type DailyAggregate @entity {
+  id: ID!
+  openTimestamp: BigInt!
+  closeTimestamp: BigInt!
+  candles: [DailyCandle!]!
+}
+
+type WeeklyAggregate @entity {
+  id: ID!
+  openTimestamp: BigInt!
+  closeTimestamp: BigInt!
+  candles: [WeeklyCandle!]!
+}
+
+type HourlyCandle @entity {
+  id: ID!
+  aggregate: HourlyAggregate!
+  priceFeed: PriceFeed!
+  assetPair: String!
+  openTimestamp: BigInt!
+  closeTimestamp: BigInt!
+  averagePrice: BigInt!
+  medianPrice: BigInt!
+  openPrice: BigInt!
+  closePrice: BigInt!
+  lowPrice: BigInt!
+  highPrice: BigInt!
+  includedPrices: [Price!]!
+}
+
+type DailyCandle @entity {
+  id: ID!
+  aggregate: DailyAggregate!
+  priceFeed: PriceFeed!
+  assetPair: String!
+  openTimestamp: BigInt!
+  closeTimestamp: BigInt!
+  averagePrice: BigInt!
+  medianPrice: BigInt!
+  openPrice: BigInt!
+  closePrice: BigInt!
+  lowPrice: BigInt!
+  highPrice: BigInt!
+  includedPrices: [Price!]!
+}
+
+type WeeklyCandle @entity {
+  id: ID!
+  aggregate: WeeklyAggregate!
+  priceFeed: PriceFeed!
+  assetPair: String!
+  openTimestamp: BigInt!
+  closeTimestamp: BigInt!
+  averagePrice: BigInt!
+  medianPrice: BigInt!
+  openPrice: BigInt!
+  closePrice: BigInt!
+  lowPrice: BigInt!
+  highPrice: BigInt!
+  includedPrices: [Price!]!
+}
