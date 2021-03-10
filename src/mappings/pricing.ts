@@ -1,25 +1,42 @@
 /* eslint-disable prefer-const */
-import { Pair, Token, Bundle, PriceFeed, Price } from '../types/schema'
-import { BigDecimal, Address, BigInt } from '@graphprotocol/graph-ts/index'
-import { ZERO_BD, ADDRESS_ZERO, ONE_BD } from './helpers'
+import { Bundle, Pair, Price, PriceFeed, Token } from '../types/schema'
+import { Address, BigDecimal, BigInt, log } from '@graphprotocol/graph-ts/index'
+import { ADDRESS_ZERO, ONE_BD, ZERO_BD } from './helpers'
 import { Factory as FactoryContract } from '../types/templates/Pair/Factory'
+
+export const ETH_PRICE_AGGREGATOR_ADDRESS = '0x00c7a37b03690fb9f41b5c5af8131735c7275446'
 
 const WETH_ADDRESSES: string[] = [
   '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-  '0xd0A1E359811322d97991E03f863a0C30C2cF029C'
+  '0xd0a1e359811322d97991e03f863a0c30c2cf029c'
 ]
-const ETH_USD_RATE_AGGREGATOR = '0x00c7A37B03690fb9f41b5C5AF8131735C7275446'
 
 export function getEthPriceInUSD(): BigDecimal {
-  let ethRate = PriceFeed.load(ETH_USD_RATE_AGGREGATOR)
+  let ethPriceFeed = PriceFeed.load(ETH_PRICE_AGGREGATOR_ADDRESS)
 
-  if (ethRate !== null) {
-    let priceId = ethRate.latestPrice
-    let price = Price.load(priceId)
-    return new BigDecimal(price.price)
-  } else {
-    return ZERO_BD
+  if (ethPriceFeed) {
+    log.debug('Getting ETH price feed with id: {}', [ethPriceFeed.id])
+
+    let latestPriceId = ethPriceFeed.latestPrice
+    log.debug('Getting the latest price id: {}', [latestPriceId])
+
+    if (latestPriceId != '') {
+      let latestPrice = Price.load(latestPriceId)
+
+      if (latestPrice) {
+        let latestPriceValue = new BigDecimal(latestPrice.price)
+        log.debug('Getting the latest ETH price: {}', [latestPriceValue.toString()])
+
+        let priceDivider = BigDecimal.fromString('100000000')
+        let roundedPrice = latestPriceValue.div(priceDivider)
+        log.debug('Getting the rounded price: {}', [roundedPrice.toString()])
+
+        return roundedPrice
+      }
+    }
   }
+
+  return ZERO_BD
 }
 
 // token where amounts should contribute to tracked volume and liquidity
@@ -48,7 +65,7 @@ let MINIMUM_LIQUIDITY_THRESHOLD_ETH = BigDecimal.fromString('2')
  * @todo update to be derived ETH (add stablecoin estimates)
  **/
 export function findEthPerToken(token: Token, factoryAddress: string): BigDecimal {
-  if (token.id == WETH_ADDRESSES[0] || token.id == WETH_ADDRESSES[1]) {
+  if (WETH_ADDRESSES.includes(token.id)) {
     return ONE_BD
   }
 

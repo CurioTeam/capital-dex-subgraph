@@ -1,6 +1,6 @@
-import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
+import { BigDecimal } from '@graphprotocol/graph-ts';
 import { AnswerUpdated } from '../types/EthUsdRate/AggregatorInterface';
-import { Price, PriceFeed } from '../types/schema';
+import { Bundle, Price, PriceFeed } from '../types/schema'
 import { logCritical } from '../utils/logCritical';
 import { updateDailyCandle, updateHourlyCandle, updateWeeklyCandle } from './Candle';
 
@@ -49,6 +49,13 @@ export function createPrice(event: AnswerUpdated, feed: PriceFeed): Price {
   feed.latestDailyCandle = daily.id;
   feed.latestWeeklyCandle = weekly.id;
   feed.save();
+
+  let bundle = Bundle.load('1');
+  let decimalPrice = new BigDecimal(event.params.current);
+  let priceDivider = BigDecimal.fromString('100000000');
+  let roundedPrice = decimalPrice.div(priceDivider);
+  bundle.ethPrice = roundedPrice;
+  bundle.save();
 
   return price;
 }
