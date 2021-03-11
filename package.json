@@ -6,7 +6,7 @@
   "scripts": {
     "codegen": "graph codegen --output-dir src/types/",
     "build": "graph build",
-    "deploy:staging": "graph deploy dmolim/capital-dex --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token 0ba04b63b9684e0c9959bfbf732c8070 --debug"
+    "deploy": "graph deploy curioteam/capital-dex --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --debug"
   },
   "devDependencies": {
     "@chainlink/contracts": "^0.1.6",
