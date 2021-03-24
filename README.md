@@ -1,6 +1,6 @@
 # Capital DEX Subgraph
 
-[Capital DEX](https://capitaldex.exchange) is a decentralized legally protected exchange primarily for security tokens.
+[Capital DEX](https://capitaldex.exchange) is a decentralized exchange primarily for Security Car Tokens.
 
 This subgraph dynamically tracks any pair created by the Capital DEX factory. It tracks of the current state of Capital DEX contracts, and contains derived stats for things like historical data and USD prices.
 
@@ -42,7 +42,7 @@ These contain specifc information about a transaction. Things like which pair tr
 
 ## Example Queries
 
-### Querying Aggregated Uniswap Data
+### Querying Aggregated Capital DEX Data
 
 This query fetches aggredated data from all Capital DEX pairs and tokens, to give a view into how much activity is happening within the whole protocol.
 
