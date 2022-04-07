@@ -8,7 +8,7 @@ dataSources:
     name: EthUsdRate
     network: mainnet
     source:
-      address: '0x00c7A37B03690fb9f41b5C5AF8131735C7275446'
+      address: '0x37bC7498f4FF12C19678ee8fE19d713b87F6a9e6'
       abi: AggregatorInterface
       startBlock: 11529924
     mapping:
