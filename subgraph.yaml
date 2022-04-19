@@ -1,6 +1,9 @@
 specVersion: 0.0.2
 description: Capital DEX is a decentralized legally protected exchange primarily for security tokens.
 repository: https://github.com/CurioTeam/capital-dex-subgraph
+graft:
+  base: QmUjt3MBmhLVozAP3Ptk4VG1PYGn1ZahF11cKksNv3Xtzy
+  block: 14615928
 schema:
   file: ./schema.graphql
 dataSources:
