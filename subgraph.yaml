@@ -5,6 +5,25 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
+    name: LegacyEthUsdRate
+    network: mainnet
+    source:
+      address: '0x00c7A37B03690fb9f41b5C5AF8131735C7275446'
+      abi: AggregatorInterface
+      startBlock: 11529924
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/rates/ethusd.ts
+      entities: [ ]
+      abis:
+        - name: AggregatorInterface
+          file: ./node_modules/@chainlink/contracts/abi/v0.7/AggregatorInterface.json
+      eventHandlers:
+        - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
+          handler: handleAnswerUpdated
+  - kind: ethereum/contract
     name: EthUsdRate
     network: mainnet
     source:
