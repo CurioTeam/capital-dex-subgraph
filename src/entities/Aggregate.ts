@@ -1,5 +1,5 @@
 import { BigInt, ethereum } from '@graphprotocol/graph-ts';
-import { HourlyAggregate, Price, AggregateState } from '../types/schema';
+import { Price } from '../types/schema';
 import {
   day,
   getDailyOpenTime,
@@ -14,6 +14,7 @@ import { candleId, createCandle } from './Candle';
 import { Aggregate, Candle } from './Entity';
 import { usePriceFeed } from './PriceFeed';
 import { ensureAggregateState } from './AggregateState';
+import { PriceFeedId } from '../constants/priceFeedId'
 
 export function aggregateId(type: String, open: BigInt): string {
   return type + '/' + open.toString();
@@ -143,7 +144,7 @@ export function prePopulateCandles(type: string, open: BigInt, close: BigInt): C
       continue;
     }
 
-    let newCandleId = candleId(usePriceFeed(previousCandle.priceFeed).id, type, open);
+    let newCandleId = candleId(usePriceFeed().id, type, open);
     let newCandle = createCandle(newCandleId, type, price, open, close);
     newCandles = newCandles.concat([newCandle]);
   }

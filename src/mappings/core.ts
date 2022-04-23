@@ -23,7 +23,6 @@ import {
   BI_18,
   createLiquiditySnapshot, CAPITAL_DEX_FACTORY_ADDRESS
 } from './helpers'
-import { dataSource } from '@graphprotocol/graph-ts'
 
 function isCompleteMint(mintId: string): boolean {
   return MintEvent.load(mintId).sender !== null // sufficient checks
@@ -238,8 +237,8 @@ export function handleSync(event: Sync): void {
   bundle.ethPrice = getEthPriceInUSD()
   bundle.save()
 
-  token0.derivedETH = findEthPerToken(token0 as Token, CAPITAL_DEX_FACTORY_ADDRESS)
-  token1.derivedETH = findEthPerToken(token1 as Token, CAPITAL_DEX_FACTORY_ADDRESS)
+  token0.derivedETH = findEthPerToken(token0 as Token, pair as Pair)
+  token1.derivedETH = findEthPerToken(token1 as Token, pair as Pair)
   token0.save()
   token1.save()
 

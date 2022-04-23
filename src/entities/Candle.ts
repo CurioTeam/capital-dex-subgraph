@@ -81,7 +81,7 @@ export function createCandle(id: string, type: string, price: Price, open: BigIn
   candle.openTimestamp = open;
   candle.closeTimestamp = close;
   candle.assetPair = price.assetPair;
-  candle.priceFeed = usePriceFeed(price.priceFeed).id;
+  candle.priceFeed = usePriceFeed().id;
   candle.averagePrice = price.price;
   candle.medianPrice = price.price;
   candle.openPrice = price.price;
