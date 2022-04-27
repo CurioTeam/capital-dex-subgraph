@@ -1,13 +1,21 @@
 /* eslint-disable prefer-const */
 import { Bundle, Pair, Price, PriceFeed, Token } from '../types/schema'
-import { BigDecimal, log } from '@graphprotocol/graph-ts/index'
+import { BigDecimal, log } from '@graphprotocol/graph-ts'
 import { ONE_BD, ZERO_BD } from './helpers'
 import { PriceFeedId } from '../constants/priceFeedId'
+import { syncEthPricesForPair } from './core'
 
 const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
 const DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f'
 const CSC_ADDRESS = '0xfdcdfa378818ac358739621ddfa8582e6ac1adcb'
 const WCT1_ADDRESS = '0x46683747b55c4a0ff783b1a502ce682eb819eb75'
+
+const PAIRS_UPDATING_WITH_ETH_PRICE: string[] = [
+  '0xb9fce07db9737810cbc573e43ba700aa4655b6bc', // DAI-CGT
+  '0x7ca174ee6e7bc23e59747177244a44465f4e432b', // CGT-CSC
+  '0xde61e107382dc530b190d5ee748c5cf119a1816d', // ETH-CSC
+  '0xf67c990798221fdf41a4e77b6be2ce5c87df771e' // wCT1-CGT
+]
 
 export function getEthPriceInUSD(): BigDecimal {
   let ethPriceFeed = PriceFeed.load(PriceFeedId.ETH_USD as string)
@@ -142,5 +150,14 @@ export function getTrackedLiquidityUSD(
   log.info('[Tracked liquidity USD]: Token prices: {}, {}', [price0.toString(), price1.toString()])
 
   return tokenAmount0.times(price0).plus(tokenAmount1.times(price1))
+}
+
+export function syncPairsUpdatingWithEthPrice(): void {
+  for (let i = 0; i < PAIRS_UPDATING_WITH_ETH_PRICE.length; i++) {
+    let pair = Pair.load(PAIRS_UPDATING_WITH_ETH_PRICE[i])
+    if (pair !== null) {
+      syncEthPricesForPair(pair as Pair)
+    }
+  }
 }
 

@@ -214,8 +214,9 @@ export function handleSync(event: Sync): void {
   let token0 = Token.load(pair.token0)
   let token1 = Token.load(pair.token1)
   let factory = Factory.load(CAPITAL_DEX_FACTORY_ADDRESS)
+  let bundle = Bundle.load('1')
 
-  // reset factory liquidity by subtracting onluy tarcked liquidity
+  // reset factory liquidity by subtracting only tracked liquidity
   factory.totalLiquidityETH = factory.totalLiquidityETH.minus(pair.trackedReserveETH as BigDecimal)
 
   // reset token total liquidity amounts
@@ -233,10 +234,6 @@ export function handleSync(event: Sync): void {
   pair.save()
 
   // update ETH price now that reserves could have changed
-  let bundle = Bundle.load('1')
-  bundle.ethPrice = getEthPriceInUSD()
-  bundle.save()
-
   token0.derivedETH = findEthPerToken(token0 as Token, pair as Pair)
   token1.derivedETH = findEthPerToken(token1 as Token, pair as Pair)
   token0.save()
@@ -270,6 +267,16 @@ export function handleSync(event: Sync): void {
   // save entities
   pair.save()
   factory.save()
+  token0.save()
+  token1.save()
+}
+
+export function syncEthPricesForPair(pair: Pair): void {
+  let token0 = Token.load(pair.token0)
+  let token1 = Token.load(pair.token1)
+
+  token0.derivedETH = findEthPerToken(token0 as Token, pair as Pair)
+  token1.derivedETH = findEthPerToken(token1 as Token, pair as Pair)
   token0.save()
   token1.save()
 }
