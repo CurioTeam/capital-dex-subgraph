@@ -50,6 +50,25 @@ dataSources:
       eventHandlers:
         - event: PairCreated(indexed address,indexed address,address,uint256)
           handler: handleNewCapitalDexPair
+  - kind: ethereum/contract
+    name: Ct1UsdRate
+    network: mainnet
+    source:
+      address: '0x6c008f90527Eb9Fc4762b331C5A8A1fEAe2542C9'
+      abi: Spotter
+      startBlock: 12494329
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/rates/ct1usd.ts
+      entities: [ ]
+      abis:
+        - name: Spotter
+          file: ./abis/spotter.json
+      eventHandlers:
+        - event: Poke(bytes32,bytes32,uint256)
+          handler: handlePoke
 templates:
   - kind: ethereum/contract
     name: Pair

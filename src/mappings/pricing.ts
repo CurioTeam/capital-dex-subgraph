@@ -1,14 +1,15 @@
 /* eslint-disable prefer-const */
-import { Bundle, Pair, Price, PriceFeed, Token } from '../types/schema'
+import { Bundle, Pair, Price, PriceFeed, SpotterBundle, Token } from '../types/schema'
 import { BigDecimal, log } from '@graphprotocol/graph-ts'
 import { ONE_BD, ZERO_BD } from './helpers'
 import { PriceFeedId } from '../constants/priceFeedId'
 import { syncEthPricesForPair } from './core'
+import { CT1Ilk } from './rates/ct1usd'
 
 const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
 const DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f'
 const CSC_ADDRESS = '0xfdcdfa378818ac358739621ddfa8582e6ac1adcb'
-const WCT1_ADDRESS = '0x46683747b55c4a0ff783b1a502ce682eb819eb75'
+export const WCT1_ADDRESS = '0x46683747b55c4a0ff783b1a502ce682eb819eb75'
 
 const PAIRS_UPDATING_WITH_ETH_PRICE: string[] = [
   '0xb9fce07db9737810cbc573e43ba700aa4655b6bc', // DAI-CGT
@@ -39,6 +40,19 @@ export function getEthPriceInUSD(): BigDecimal {
 
         return roundedPrice
       }
+    }
+  }
+
+  return ZERO_BD
+}
+
+export function calculateWCT1PriceInEth(): BigDecimal {
+  let bundle = Bundle.load('1')
+  let spotterBundle = SpotterBundle.load(CT1Ilk)
+  if (bundle !== null && spotterBundle !== null) {
+    let ethPrice = bundle.ethPrice
+    if (ethPrice.notEqual(ZERO_BD)) {
+      return spotterBundle.price.div(ethPrice)
     }
   }
 
@@ -77,17 +91,7 @@ export function findEthPerToken(token: Token, pair: Pair): BigDecimal {
   if (token.id == WCT1_ADDRESS) {
     log.info('[ETH per token]: This is wCT1 token', [])
 
-    let bundle = Bundle.load('1')
-
-    if (bundle !== null) {
-      let ethPrice = bundle.ethPrice
-
-      if (ethPrice.notEqual(ZERO_BD)) {
-        return BigDecimal.fromString('0.97').div(ethPrice)
-      }
-    }
-
-    return ZERO_BD
+    return calculateWCT1PriceInEth()
   }
 
   if (token.id == pair.token0) {

@@ -41,10 +41,8 @@ export function convertTokenToDecimal(tokenAmount: BigInt, exchangeDecimals: Big
 export function equalToZero(value: BigDecimal): boolean {
   const formattedVal = parseFloat(value.toString())
   const zero = parseFloat(ZERO_BD.toString())
-  if (zero == formattedVal) {
-    return true
-  }
-  return false
+  return zero == formattedVal;
+
 }
 
 export function isNullEthValue(value: string): boolean {
