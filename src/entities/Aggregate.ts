@@ -14,7 +14,6 @@ import { candleId, createCandle } from './Candle';
 import { Aggregate, Candle } from './Entity';
 import { usePriceFeed } from './PriceFeed';
 import { ensureAggregateState } from './AggregateState';
-import { PriceFeedId } from '../constants/priceFeedId'
 
 export function aggregateId(type: String, open: BigInt): string {
   return type + '/' + open.toString();

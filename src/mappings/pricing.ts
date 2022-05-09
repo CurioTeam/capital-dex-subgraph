@@ -9,6 +9,7 @@ import { CT1Ilk } from './rates/ct1usd'
 const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
 const DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f'
 const CSC_ADDRESS = '0xfdcdfa378818ac358739621ddfa8582e6ac1adcb'
+const XCHF_ADDRESS = '0xb4272071ecadd69d933adcd19ca99fe80664fc08'
 export const WCT1_ADDRESS = '0x46683747b55c4a0ff783b1a502ce682eb819eb75'
 
 export function getEthPriceInUSD(): BigDecimal {
@@ -75,6 +76,23 @@ export function findEthPerToken(token: Token, pair: Pair): BigDecimal {
 
       if (ethPrice.notEqual(ZERO_BD)) {
         return decimalOne.div(ethPrice)
+      }
+    }
+
+    return ZERO_BD
+  }
+
+  if (token.id == XCHF_ADDRESS) {
+    log.info('[ETH per token]: This is XCHF token', [])
+
+    let bundle = Bundle.load('1')
+
+    if (bundle !== null) {
+      let chfPrice = bundle.chfPrice
+      let ethPrice = bundle.ethPrice
+
+      if (ethPrice.notEqual(ZERO_BD)) {
+        return chfPrice.div(ethPrice)
       }
     }
 

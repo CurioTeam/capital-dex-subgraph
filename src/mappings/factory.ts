@@ -7,6 +7,7 @@ import {
   UNISWAP_FACTORY_ADDRESS,
   CAPITAL_DEX_FACTORY_ADDRESS,
   ZERO_BD,
+  ONE_BD,
   ZERO_BI,
   fetchTokenSymbol,
   fetchTokenName,
@@ -111,6 +112,7 @@ export function handleNewPair(event: PairCreated, factoryAddress: string): void 
     // create new bundle
     let bundle = new Bundle('1')
     bundle.ethPrice = ZERO_BD
+    bundle.chfPrice = ONE_BD
     bundle.save()
   }
   factory.pairCount = factory.pairCount + 1

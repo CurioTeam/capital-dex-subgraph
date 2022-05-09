@@ -212,7 +212,8 @@ type Swap @entity {
 # stores for USD calculations
 type Bundle @entity {
   id: ID!
-  ethPrice: BigDecimal! # price of ETH usd
+  ethPrice: BigDecimal! # price of ETH in USD
+  chfPrice: BigDecimal! # price of CHF in USD
 }
 
 # stores for prices coming from the spotter contract
