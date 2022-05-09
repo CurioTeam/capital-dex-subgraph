@@ -4,6 +4,7 @@ type Factory @entity {
 
   # pair info
   pairCount: Int!
+  pairs: [Pair!]!
 
   # total volume
   totalVolumeUSD: BigDecimal!

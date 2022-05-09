@@ -2,7 +2,7 @@ import { AnswerUpdated } from '../../types/EthUsdRate/AggregatorInterface';
 import { updateAggregates } from '../../entities/Aggregate';
 import { createPrice } from '../../entities/Price';
 import { ensurePriceFeed } from '../../entities/PriceFeed';
-import { getEthPriceInUSD, syncPairsUpdatingWithEthPrice } from '../pricing'
+import { getEthPriceInUSD, updatePairPrices } from '../pricing'
 import { Bundle } from '../../types/schema'
 
 export function updateBundle(): void {
@@ -15,7 +15,7 @@ export function handleAnswerUpdatedForPair(pair: string, event: AnswerUpdated): 
   updateAggregates(event);
   createPrice(event, ensurePriceFeed(event, pair));
   updateBundle();
-  syncPairsUpdatingWithEthPrice();
+  updatePairPrices();
 }
 
 export function handleAnswerUpdated(event: AnswerUpdated): void {

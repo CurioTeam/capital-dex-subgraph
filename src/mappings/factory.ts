@@ -18,26 +18,6 @@ export function handleNewPair(event: PairCreated, factoryAddress: string): void 
   let context = new DataSourceContext()
   context.setString("factoryAddress", factoryAddress)
 
-  // load factory (create if first exchange)
-  let factory = Factory.load(factoryAddress)
-  if (factory === null) {
-    factory = new Factory(factoryAddress)
-    factory.pairCount = 0
-    factory.totalVolumeETH = ZERO_BD
-    factory.totalLiquidityETH = ZERO_BD
-    factory.totalVolumeUSD = ZERO_BD
-    factory.untrackedVolumeUSD = ZERO_BD
-    factory.totalLiquidityUSD = ZERO_BD
-    factory.txCount = ZERO_BI
-
-    // create new bundle
-    let bundle = new Bundle('1')
-    bundle.ethPrice = ZERO_BD
-    bundle.save()
-  }
-  factory.pairCount = factory.pairCount + 1
-  factory.save()
-
   // create the tokens
   let token0 = Token.load(event.params.token0.toHexString())
   let token1 = Token.load(event.params.token1.toHexString())
@@ -114,6 +94,27 @@ export function handleNewPair(event: PairCreated, factoryAddress: string): void 
   token0.save()
   token1.save()
   pair.save()
+
+  // load factory (create if first exchange)
+  let factory = Factory.load(factoryAddress)
+  if (factory === null) {
+    factory = new Factory(factoryAddress)
+    factory.pairCount = 0
+    factory.pairs = []
+    factory.totalVolumeETH = ZERO_BD
+    factory.totalLiquidityETH = ZERO_BD
+    factory.totalVolumeUSD = ZERO_BD
+    factory.untrackedVolumeUSD = ZERO_BD
+    factory.totalLiquidityUSD = ZERO_BD
+    factory.txCount = ZERO_BI
+
+    // create new bundle
+    let bundle = new Bundle('1')
+    bundle.ethPrice = ZERO_BD
+    bundle.save()
+  }
+  factory.pairCount = factory.pairCount + 1
+  factory.pairs = factory.pairs.concat([pair.id])
   factory.save()
 }
 
